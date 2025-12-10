@@ -24,7 +24,7 @@ func getNoteData() (string, string, error) {
 
 	content, err := getUserInput("Note content:")
 
-14-practice-user-input	if err != nil {
+	if err != nil {
 		return "", "", err
 	}
 
