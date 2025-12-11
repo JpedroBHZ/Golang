@@ -20,7 +20,7 @@ func main() {
 	fmt.Println(prices)
 	fmt.Println(len(highlightedPrices), cap(highlightedPrices)) //qtd elementos x qtd total
 
-	highlightedPrices = highlightedPrices[:3] //quando cortamos a direita, ficou salvo na memoria do go
-	fmt.Println(highlightedPrices)            //por cortarmos a esquerda ele se perde
+	highlightedPrices = highlightedPrices[:3] //quando cortamos a direita, fica salvo o resto na memoria do go
+	fmt.Println(highlightedPrices)            //quando cortarmos a esquerda ele se perde
 	fmt.Println(len(highlightedPrices), cap(highlightedPrices))
 }
