@@ -1,0 +1,13 @@
+O driver padrão do sqlite, exige que o C Go esteja habilitado, o que requer um c
+
+Opção 1 baixar compilador C MinGW-w64
+Baixar chocolately 
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+Baixar Mingw 
+choco install mingw -y
+
+Opção 2 Usar um drive "Pure go" 
+go get modernc.org/sqlite
+Troque a importação de abertura de conexão no db.go
+_ "modernc.org/sqlite" // Troque o "github.com/mattn/go-sqlite3" por este
+

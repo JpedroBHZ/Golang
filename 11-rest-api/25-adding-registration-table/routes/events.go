@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"example.com/rest-api/models"
-	"example.com/rest-api/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,22 +37,9 @@ func getEvent(context *gin.Context) {
 
 // manipulador da solicitação createEvents
 func createEvents(context *gin.Context) {
-	token := context.Request.Header.Get("Authorization") //Procura token no header
 
-	if token == "" { //Caso token vazio
-		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
-		return
-	}
-
-	userId, err := utils.VerifyToken(token)
-
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
-		return
-	}
-
-	var event models.Event               //criando evento
-	err = context.ShouldBindJSON(&event) //preenchendo evento com solicitação de entrada
+	var event models.Event                //criando evento
+	err := context.ShouldBindJSON(&event) //preenchendo evento com solicitação de entrada
 
 	//Em caso de erro ao gravar evento
 	if err != nil {
@@ -62,6 +48,7 @@ func createEvents(context *gin.Context) {
 	}
 
 	//Em caso de sucesso ao gravar evento
+	userId := context.GetInt64("userId")
 	event.UserID = userId
 
 	//Metodo de salvamento do evento
@@ -82,10 +69,16 @@ func updateEvent(context *gin.Context) {
 		return
 	}
 
-	_, err = models.GetEventByID(eventId)
+	userId := context.GetInt64("userId")
+	event, err := models.GetEventByID(eventId)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch the event."})
+		return
+	}
+
+	if event.UserID != userId { //testa se o usuário que criou o evento, é o mesmo que está atualizando
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized to update event."})
 		return
 	}
 
@@ -113,10 +106,16 @@ func deleteEvent(context *gin.Context) {
 		return
 	}
 
+	userId := context.GetInt64("userId")
 	event, err := models.GetEventByID(eventId)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch the event."})
+		return
+	}
+
+	if event.UserID != userId { //testa se o usuário que criou o evento, é o mesmo que está deletando
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized to delete event."})
 		return
 	}
 
